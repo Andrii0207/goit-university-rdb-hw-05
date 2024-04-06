@@ -1,0 +1,52 @@
+1. 
+use `goit-rdb-hw-03`;
+
+SELECT *, (SELECT customer_id FROM orders WHERE orders.id = order_details.order_id) AS customer_id
+FROM order_details
+
+
+2.
+use `goit-rdb-hw-03`;
+
+SELECT * 
+FROM order_details AS od
+WHERE od.order_id IN (SELECT id FROM orders WHERE shipper_id = 3);
+
+
+3.
+use `goit-rdb-hw-03`;
+
+SELECT AVG(temp_table.quantity) AS avg_quantity
+FROM (SELECT * FROM order_details WHERE order_details.quantity > 10) AS temp_table
+GROUP BY order_id;
+
+
+4.
+use `goit-rdb-hw-03`;
+
+WITH temp AS (SELECT * FROM order_details WHERE order_details.quantity > 10)
+SELECT AVG(temp.quantity) AS avg_quantity
+FROM temp
+GROUP BY order_id;
+
+
+5.
+use `goit-rdb-hw-03`;
+DROP FUNCTION IF EXISTS MathOperation;
+
+DELIMITER //
+
+CREATE FUNCTION MathOperation(param1 FLOAT, param2 FLOAT)
+RETURNS FLOAT
+DETERMINISTIC 
+NO SQL
+BEGIN
+	DECLARE quantity FLOAT;
+    SET quantity = param1 / param2;
+    RETURN quantity;
+END //
+
+DELIMITER ;
+
+SELECT MathOperation(quantity, 1000) AS result
+FROM order_details;
